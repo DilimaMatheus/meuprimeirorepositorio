@@ -1,0 +1,37 @@
+require(tidyr)
+require(magrittr)
+require(dplyr)
+
+View(table1)
+
+### pivot_wider
+```{r}
+args(pivot_wider)
+table1 %>% select(-population) %>% pivot_wider(names_from = year,
+                       values_from = cases,
+                       values_fill = 0,
+                       values_fn = length)
+```
+
+## pivot_longer
+
+```{r}
+table1 %>%
+pivot_longer(cols = c(cases,population), names_to = 'variavel', values_to = 'tam_pop')
+```
+
+
+```{r}
+View(table3)
+
+table3_sep <- table3 %>% separate(rate, c('casos','populacao'), sep='/')
+
+```
+
+### unite
+
+```{r}
+# unite falhou
+tab3_sep %>% unite(pop_casos, populacao, casos, sep="-")
+
+```

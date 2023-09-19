@@ -1,0 +1,69 @@
+---
+title: "aula bd 9"
+format: html
+editor: visual
+---
+
+## Quarto
+
+Quarto enables you to weave together content and executable code into a finished document. To learn more about Quarto see <https://quarto.org>.
+
+## Running Code
+
+When you click the **Render** button a document will be generated that includes both content and the output of embedded code. You can embed code like this:
+
+```{r}
+1 + 1
+```
+
+You can add options to executable code like this
+
+```{r}
+require(tidyr)
+require(magrittr)
+require(dplyr)
+```
+
+The `echo: false` option disables the printing of code (only output is displayed).
+
+```{r}
+require(data.table)
+
+TB <- fread('~/Downloads/TB.csv.gz')
+
+TB1 = TB %>% select(-c(iso2, iso3)) %>% pivot_longer(-c(country,year), names_to = 'chave', values_to = 'casos', values_drop_na = TRUE)
+        
+
+
+```
+
+```{r}
+#pacote :: nome_da_func
+TB2 = TB1 %>% mutate(chave = stringr::str_replace(chave, "newrel", "new_rel"))
+```
+
+```{r}
+TB3 = TB2 %>% 
+      separate(chave, c('novo', 'tipo', 'sexoidade'), sep='_') %>% 
+      select(-novo) %>%
+      separate(sexoidade, c('sexo','idade', sep=1))
+TB4 <- TB3
+```
+
+```{r}
+TB4 %>% select(country, year, casos) %>%
+  pivot_wider(names_from = c(country),
+                       values_from = casos,
+                       values_fill = 0,
+                       values_fn = length) %>%
+  mutate(year = stringr::str_glue('Ano_{year}'))
+```
+
+```{r}
+TB4 %>% 
+  pivot_wider(names_from = c(year),
+              names_prefix='Ano_',
+              id_cols = country,
+                       values_from = casos,
+                       values_fn = sum) 
+```
